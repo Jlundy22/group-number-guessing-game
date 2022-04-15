@@ -5,8 +5,8 @@ $(document).ready(handleReady);
 
 function handleReady() {
   console.log("jquery is loaded!")
-  gamePrep();
   $('#submitButton').on('click', onSubmitClick)
+  $('#restartButton').on('click', gameStart)
 }
 
 ////////////////////////////////////////////////////////////
@@ -33,10 +33,30 @@ let player3win = false;
 //Functions
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
-//Function: Game Prep
+//Function: gameStart()
 ////////////////////////////////////////////////////////////
-function gamePrep(){
+function gameStart() {
+  // AJAX GET
+  $.ajax({
+    method: 'GET',
+    url: '/gamestart'
+  }).then(function (response) {
+    console.log('the server sent me a guess evaluation');
+    console.log(response);
+  })
+  }
+////////////////////////////////////////////////////////////
+//Function: getAnswerStatusFromServer
+////////////////////////////////////////////////////////////
+function getAnswerStatusFromServer() {
 // AJAX GET
+$.ajax({
+  method: 'GET',
+  url: '/guesses'
+}).then(function (response) {
+  console.log('the server sent me a guess evaluation');
+  console.log(response);
+})
 }
 ////////////////////////////////////////////////////////////
 //Function: Round Counter
@@ -55,6 +75,8 @@ function onSubmitClick(){
   if (!player1Guess || !player2Guess || !player3Guess){
     alert('Please enter a number in all inputs')
     return;
+  } else {
+    roundCounter++;
   }
   $.ajax({
     method: 'POST',
@@ -62,7 +84,9 @@ function onSubmitClick(){
     data: guess
   })
   .then( function (response){
-
+console.log('response of POST is:');
+console.log(response);
+getAnswerStatusFromServer();
   })
 }
 
@@ -70,9 +94,9 @@ function onSubmitClick(){
 //Function: Append Results and Rounds to DOM
 ////////////////////////////////////////////////////////////
 function appendToDOM(){
-  $('#game-status').empty();
-  $('#game-status').append(`
-  Round Counter: ${roundCounter}
+  $('#roundCount').empty();
+  $('#roundCount').append(`
+   ${roundCounter}
   `)
 
 }
